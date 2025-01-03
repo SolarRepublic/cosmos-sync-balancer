@@ -1,7 +1,17 @@
 {
   "name": "@solar-republic/cosmos-sync-balancer",
   "version": "0.0.1",
+  "description": "A zero-downtime, hot-reloading, load balancer with fallbacks for routing to healthy Cosmos nodes' RPC and LCD endpoints.",
+  "homepage": "https://starshell.net/",
+  "repository": "github:@solar-republic/cosmos-sync-balancer",
+  "license": "ISC",
+  "files": [
+    "dist"
+  ],
   "module": "dist/configurator.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "config": {
     "env": "prod"
