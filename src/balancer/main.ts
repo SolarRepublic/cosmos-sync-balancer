@@ -87,6 +87,9 @@ const sx_config = await readFile('/data/config.json');
 // parse as JSON and set on host object
 g_host.config = parse_json(bytes_to_text(sx_config));
 
+// define update function
+g_host.update = update_balancer;
+
 // create admin server on the host object
 await create_admin_server(g_host);
 

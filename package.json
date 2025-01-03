@@ -1,5 +1,6 @@
 {
-  "name": "cosmos-balancer",
+  "name": "@solar-republic/cosmos-sync-balancer",
+  "version": "0.0.1",
   "module": "dist/configurator.js",
   "type": "module",
   "config": {
