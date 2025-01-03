@@ -1,0 +1,28 @@
+{
+  "name": "cosmos-balancer",
+  "module": "dist/configurator.js",
+  "type": "module",
+  "config": {
+    "env": "prod"
+  },
+  "scripts": {
+    "docker-build": "docker build -t solar-republic/cosmos-node-balancer .",
+    "docker-run": "docker rm -f cosmos-nodes; docker run -d --name cosmos-nodes --env-file=.env -p 23000:23000 -p 8443:8443 --mount type=bind,source=$(pwd)/admin/gen/${npm_config_env:-prod}.json,target=/data/config.json solar-republic/cosmos-node-balancer",
+    "build:tsc": "npx tsc && npx tsc-esm-fix --target=dist",
+    "build": "npm run build:tsc && npm run docker-build",
+    "start": "npm run docker-run"
+  },
+  "dependencies": {
+    "@blake.regalia/belt": "^0.51.0"
+  },
+  "devDependencies": {
+    "@blake.regalia/eslint-config-elite": "^0.5.11",
+    "@blake.regalia/tsconfig": "^0.2.0",
+    "@types/bun": "latest",
+    "@types/node": "^22.10.5",
+    "@typescript-eslint/parser": "^8.19.0",
+    "eslint": "^9.17.0",
+    "tsc-esm-fix": "^3.1.2",
+    "typescript": "^5.7.2"
+  }
+}
