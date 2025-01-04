@@ -34,6 +34,12 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/solarrepublic/cosmos-sync-balancer
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -42,3 +48,4 @@ jobs:
           tags: |
             ghcr.io/solarrepublic/cosmos-sync-balancer:latest
             ghcr.io/solarrepublic/cosmos-sync-balancer:${{ env.IMAGE_TAG }}
+          labels: ${{ steps.meta.outputs.labels }}
