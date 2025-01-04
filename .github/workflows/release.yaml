@@ -2,8 +2,7 @@ name: Release
 
 on:
   push:
-    branches: ['main']
-    tags: ['v*', 'latest']
+    tags: ['v*']
 
 jobs:
   build-and-push-image:
