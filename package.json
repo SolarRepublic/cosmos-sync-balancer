@@ -8,7 +8,7 @@
   "files": [
     "dist"
   ],
-  "module": "dist/configurator.js",
+  "main": "dist/configurator.js",
   "publishConfig": {
     "access": "public"
   },
@@ -17,8 +17,7 @@
     "env": "prod"
   },
   "scripts": {
-    "docker-build": "docker build -t solar-republic/cosmos-node-balancer .",
-    "docker-run": "docker rm -f cosmos-nodes; docker run -d --name cosmos-nodes --env-file=.env -p 23000:23000 -p 8443:8443 --mount type=bind,source=$(pwd)/admin/gen/${npm_config_env:-prod}.json,target=/data/config.json solar-republic/cosmos-node-balancer",
+    "docker-build": "docker build -t ghcr.io/solarrepublic/cosmos-sync-balancer .",
     "build:tsc": "npx tsc && npx tsc-esm-fix --target=dist",
     "build": "npm run build:tsc && npm run docker-build",
     "start": "npm run docker-run"

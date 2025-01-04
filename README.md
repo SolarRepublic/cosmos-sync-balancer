@@ -18,7 +18,7 @@ docker run -d \
   -p 23000:23000 \
   -p 8443:8443 \
   --mount type=bind,source=$(pwd)/build/balancer-prod.json,target=/data/config.json \
-  solar-republic/cosmos-sync-balancer
+  ghcr.io/solarrepublic/cosmos-sync-balancer
 ```
 
 
