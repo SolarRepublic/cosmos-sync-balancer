@@ -1,4 +1,5 @@
 FROM node:22-alpine
+LABEL org.opencontainers.image.source="https://github.com/SolarRepublic/cosmos-sync-balancer"
 WORKDIR /usr/src/app
 
 RUN apk add --no-cache haproxy supervisor inotify-tools \
