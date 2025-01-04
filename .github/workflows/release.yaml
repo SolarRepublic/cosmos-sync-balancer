@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches: ['main']
-    tags: ['v*']
+    tags: ['v*', 'latest']
 
 jobs:
   build-and-push-image:
@@ -24,8 +24,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/cosmos-sync-balancer:latest
+          tags: ghcr.io/solarrepublic/cosmos-sync-balancer:latest
