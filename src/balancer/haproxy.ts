@@ -101,6 +101,7 @@ export function gen_haproxy_cfg(
 						`${s_hostname}:${d_url.port || ('https:' === d_url.protocol? '443': '80')}`,
 						'https:' === d_url.protocol? '': 'no-ssl',
 						`sni str(${s_hostname})`,
+						'check',
 					];
 
 					// primary server; count primary online
@@ -145,7 +146,11 @@ export function gen_haproxy_cfg(
 			// create backend block
 			const s_block = `backend ${si_type}`+unindent(aligned`
 				# regularly perform HTTP checks
-				option httpchk GET ${'lcd' === si_mode? '/blocks/latest': '/status'} HTTP/1.1
+				option httpchk OPTIONS ${'lcd' === si_mode? '/cosmos/base/tendermint/v1beta1/blocks/latest': '/status'} HTTP/1.1
+				http-check expect ok-status L7OK
+
+				# redispatch if server connection fails
+				option redispatch
 
 				# how to distribute the load
 				balance roundrobin

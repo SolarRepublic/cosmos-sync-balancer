@@ -17,22 +17,23 @@
     "env": "prod"
   },
   "scripts": {
-    "docker-build": "docker build -t ghcr.io/solarrepublic/cosmos-sync-balancer .",
-    "build:tsc": "npx tsc && npx tsc-esm-fix --target=dist",
-    "build": "npm run build:tsc && npm run docker-build",
-    "start": "npm run docker-run"
+    "build-docker": "docker build -t ghcr.io/solarrepublic/cosmos-sync-balancer .",
+    "build-app": "pnpm exec tsc && pnpm exec tsc-esm-fix --target=dist",
+    "build": "pnpm run build-app && pnpm run build-docker",
+    "run-docker": "docker run --rm -n cosmos-sync-balancer ghcr.io/solarrepublic/cosmos-sync-balancer",
+    "start": "pnpm run run-docker"
   },
   "dependencies": {
-    "@blake.regalia/belt": "^0.51.0"
+    "@blake.regalia/belt": "^0.54.1"
   },
   "devDependencies": {
-    "@blake.regalia/eslint-config-elite": "^0.5.11",
-    "@blake.regalia/tsconfig": "^0.2.0",
+    "@blake.regalia/eslint-config-elite": "^0.5.22",
+    "@blake.regalia/tsconfig": "^0.3.7",
     "@types/bun": "latest",
-    "@types/node": "^22.10.5",
-    "@typescript-eslint/parser": "^8.19.0",
-    "eslint": "^9.17.0",
+    "@types/node": "^22.10.10",
+    "@typescript-eslint/parser": "^8.21.0",
+    "eslint": "^9.19.0",
     "tsc-esm-fix": "^3.1.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   }
 }

@@ -7,6 +7,35 @@ Uses haproxy for load balancing. Continuously performs health checks on all conf
 Endpoints are defined using a JSON file and can be modified live using an admin HTTP server (port 23000).
 
 
+## Using with docker-compose
+
+```docker-compose
+services:
+  balancer:
+    image: ghcr.io/solarrepublic/cosmos-sync-balancer:0.0.7
+    ports:
+      - "8443:8443"
+      - "23000:23000"
+    volumes:
+      - "./build/balancer-prod.json:/data/config.json"
+```
+
+
+## Using with direct container
+
+Run the container, exposing port 8443 for load-balanced routing, and port 23000 for admin server, mounting the config JSON file to `/data/config.json`:
+
+```bash
+docker run -d \
+  --name cosmos-sync-balancer \
+  --env-file=.env \
+  -p 23000:23000 \
+  -p 8443:8443 \
+  --mount type=bind,source=$(pwd)/build/balancer-prod.json,target=/data/config.json \
+  ghcr.io/solarrepublic/cosmos-sync-balancer:0.0.7
+```
+
+
 ## Environment variables
 
 You can optionally provide any of the following environment variables when running the application (also available on the image):
@@ -27,35 +56,6 @@ ADMIN_PORT=23000
 
 # optional path to read/write haproxy.cfg file. defaults to /etc/haproxy/haproxy.cfg
 HAPROXY_CFG_PATH=/etc/haproxy/haproxy.cfg
-```
-
-
-## Using with direct container
-
-Run the container, exposing port 8443 for load-balanced routing, and port 23000 for admin server, mounting the config JSON file to `/data/config.json`:
-
-```bash
-docker run -d \
-  --name cosmos-sync-balancer \
-  --env-file=.env \
-  -p 23000:23000 \
-  -p 8443:8443 \
-  --mount type=bind,source=$(pwd)/build/balancer-prod.json,target=/data/config.json \
-  ghcr.io/solarrepublic/cosmos-sync-balancer
-```
-
-
-## Using with docker-compose
-
-```docker-compose
-services:
-  balancer:
-    image: ghcr.io/solarrepublic/cosmos-sync-balancer
-    ports:
-      - "8443:8443"
-      - "23000:23000"
-    volumes:
-      - "./build/balancer-prod.json:/data/config.json"
 ```
 
 

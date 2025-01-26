@@ -11,7 +11,7 @@ RUN npm install -g pnpm
 RUN pnpm i --frozen-lockfile
 
 COPY src/ ./src
-RUN pnpm run build:tsc
+RUN pnpm run build-app
 
 RUN mkdir /data
 

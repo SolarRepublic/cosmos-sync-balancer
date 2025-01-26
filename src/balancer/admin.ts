@@ -53,10 +53,6 @@ export async function create_admin_server(
 				searchParams: d_params,
 			} = new URL(d_req.url || '');
 
-			// validate content-type
-			const [s_type] = d_req.headers['content-type']?.split(';') || [];
-			if(s_type.toLowerCase() !== 'application/json') return d_res.writeHead(400).end('Content-type header must be "application/json"');
-
 			// find route
 			const g_route = H_ROUTES[s_path];
 
@@ -75,6 +71,10 @@ export async function create_admin_server(
 
 				// HTTP PUT
 				case 'PUT': {
+					// validate content-type
+					const [s_type] = d_req.headers['content-type']?.split(';') || [];
+					if(s_type.toLowerCase() !== 'application/json') return d_res.writeHead(400).end('Content-type header must be "application/json"');
+
 					// prep to build chunks
 					const a_chunks: Uint8Array[] = [];
 
