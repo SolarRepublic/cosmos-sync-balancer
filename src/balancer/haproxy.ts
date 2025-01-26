@@ -147,7 +147,7 @@ export function gen_haproxy_cfg(
 			const s_block = `backend ${si_type}`+unindent(aligned`
 				# regularly perform HTTP checks
 				option httpchk OPTIONS ${'lcd' === si_mode? '/cosmos/base/tendermint/v1beta1/blocks/latest': '/status'} HTTP/1.1
-				http-check expect ok-status L7OK
+				http-check expect status 200
 
 				# redispatch if server connection fails
 				option redispatch
