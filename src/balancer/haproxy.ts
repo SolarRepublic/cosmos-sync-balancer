@@ -101,7 +101,6 @@ export function gen_haproxy_cfg(
 						`${s_hostname}:${d_url.port || ('https:' === d_url.protocol? '443': '80')}`,
 						'https:' === d_url.protocol? '': 'no-ssl',
 						`sni str(${s_hostname})`,
-						'check',
 					];
 
 					// primary server; count primary online
@@ -131,7 +130,7 @@ export function gen_haproxy_cfg(
 							# set the Host header to the name of the selected server (using its hostname)
 							http-send-name-header Host
 
-							default-server ssl check-ssl verify required ca-file /etc/ssl/certs/ca-certificates.crt
+							default-server check ssl check-ssl verify required ca-file /etc/ssl/certs/ca-certificates.crt
 							http-request set-header Authorization ${stringify_json(g_endpoint.auth)}
 							${sx_server}
 						`));
