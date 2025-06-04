@@ -1,6 +1,6 @@
 {
   "name": "@solar-republic/cosmos-sync-balancer",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A zero-downtime, hot-reloading, load balancer with fallbacks for routing to healthy Cosmos nodes' RPC and LCD endpoints.",
   "homepage": "https://starshell.net/",
   "repository": "github:@solar-republic/cosmos-sync-balancer",
@@ -17,7 +17,9 @@
     "env": "prod"
   },
   "scripts": {
-    "build-docker": "docker build -t ghcr.io/solarrepublic/cosmos-sync-balancer .",
+    "package-version": "node -p \"require('./package.json').version\"",
+    "docker-image": "echo ghcr.io/solarrepublic/cosmos-sync-balancer",
+    "build-docker": "docker build -t $(pnpm --silent docker-image):latest -t $(pnpm --silent docker-image):$(pnpm --silent package-version) .",
     "build-app": "pnpm exec tsc && pnpm exec tsc-esm-fix --target=dist",
     "build": "pnpm run build-app && pnpm run build-docker",
     "run-docker": "docker run --rm -n cosmos-sync-balancer ghcr.io/solarrepublic/cosmos-sync-balancer",

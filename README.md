@@ -7,6 +7,13 @@ Uses haproxy for load balancing. Continuously performs health checks on all conf
 Endpoints are defined using a JSON file and can be modified live using an admin HTTP server (port 23000).
 
 
+## How it works
+
+First, you define sets of endpoints for each chain you want to use with priority. For example, you might want to use paid service providers in the primary tier and public nodes as fallback in the secondary tier. You can create a different config for each of your environments (prod, qa, test, dev, etc.). See the [Configuration](#configuration) section below for an example of how to generate these JSON configs.
+
+Once you've got a JSON config file, mount it to a new docker container where a local haproxy instance is run inside the container. The haproxy config is generated based on your JSON config by the node.js process that is also running inside the container. The haproxy config includes its own failover logic and handles routing to the various endpoints based on the request path. The node.js process continually performs Cosmos-aware health checks on the configured LCD and RPC endpoints. If an unhealthy node is detected, the node is removed from the backend set for that route and the config is regenerated and haproxy is instructed to hot-reload using a process signal.
+
+
 ## Using with docker-compose
 
 ```docker-compose
