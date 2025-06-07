@@ -49,12 +49,16 @@ export function gen_haproxy_cfg(
 			a_acls.push(`acl is_${si_type}_hdr_connection_upgrade hdr(Connection) -i Upgrade`);
 
 			// add route rules
-			a_rules.push(`use_backend ${si_type} if is_${si_type}`);
-			a_rules.push(`use_backend ${si_type}_websocket if `+[
-				`is_${si_type}_path_websocket`,
-				`is_${si_type}_hdr_upgrade_websocket`,
-				`is_${si_type}_hdr_connection_upgrade`,
-			].join(' '));
+			a_rules.push(`use_backend ${si_type}_http if is_${si_type}`);
+
+			// RPC mode
+			if('rpc' === si_mode) {
+				a_rules.push(`use_backend ${si_type}_websocket if `+[
+					`is_${si_type}_path_websocket`,
+					`is_${si_type}_hdr_upgrade_websocket`,
+					`is_${si_type}_hdr_connection_upgrade`,
+				].join(' '));
+			}
 
 			// build server lines
 			const a_servers: string[] = [];
@@ -188,7 +192,6 @@ export function gen_haproxy_cfg(
 					# timeouts
 					timeout connect 5s
 					timeout server 1h
-					timeout client 1h
 		
 					# websocket upgrade
 					http-request set-header Connection upgrade if { req.hdr(Upgrade) -i websocket }
