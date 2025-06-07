@@ -50,7 +50,7 @@ export function gen_haproxy_cfg(
 
 			// add route rules
 			a_rules.push(`use_backend ${si_type} if is_${si_type}`);
-			a_rules.push(`use backend ${si_type}_websocket if `+[
+			a_rules.push(`use_backend ${si_type}_websocket if `+[
 				`is_${si_type}_path_websocket`,
 				`is_${si_type}_hdr_upgrade_websocket`,
 				`is_${si_type}_hdr_connection_upgrade`,
