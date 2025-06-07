@@ -22,7 +22,7 @@
     "build-docker": "docker build -t $(pnpm --silent docker-image):latest -t $(pnpm --silent docker-image):$(pnpm --silent package-version) .",
     "build-app": "pnpm exec tsc && pnpm exec tsc-esm-fix --target=dist",
     "build": "pnpm run build-app && pnpm run build-docker",
-    "run-docker": "docker run --rm -n cosmos-sync-balancer ghcr.io/solarrepublic/cosmos-sync-balancer",
+    "run-docker": "docker run --rm --name cosmos-sync-balancer ghcr.io/solarrepublic/cosmos-sync-balancer",
     "start": "pnpm run run-docker"
   },
   "dependencies": {

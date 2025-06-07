@@ -42,11 +42,19 @@ export function gen_haproxy_cfg(
 			// path prefix
 			const sr_path = `/${si_service}-${si_mode}`;
 
-			// create ACL
+			// create ACLs
 			a_acls.push(`acl is_${si_type} path_beg ${sr_path}`);
+			a_acls.push(`acl is_${si_type}_path_websocket path_beg ${sr_path}/websocket`);
+			a_acls.push(`acl is_${si_type}_hdr_upgrade_websocket hdr(Upgrade) -i Websocket`);
+			a_acls.push(`acl is_${si_type}_hdr_connection_upgrade hdr(Connection) -i Upgrade`);
 
-			// add route rule
+			// add route rules
 			a_rules.push(`use_backend ${si_type} if is_${si_type}`);
+			a_rules.push(`use backend ${si_type}_websocket if `+[
+				`is_${si_type}_path_websocket`,
+				`is_${si_type}_hdr_upgrade_websocket`,
+				`is_${si_type}_hdr_connection_upgrade`,
+			].join(' '));
 
 			// build server lines
 			const a_servers: string[] = [];
@@ -95,12 +103,15 @@ export function gen_haproxy_cfg(
 					// create server name
 					const s_name = s_hostname;
 
+					// HTTPS
+					const b_secure = 'https:' === d_url.protocol;
+
 					// build server
 					const a_options: string[] = [
 						'server', s_name,
-						`${s_hostname}:${d_url.port || ('https:' === d_url.protocol? '443': '80')}`,
-						'https:' === d_url.protocol? '': 'no-ssl',
-						`sni str(${s_hostname})`,
+						`${s_hostname}:${d_url.port || (b_secure? '443': '80')}`,
+						b_secure? '': 'no-ssl',
+						b_secure? `sni str(${s_hostname})`: '',
 					];
 
 					// primary server; count primary online
@@ -142,8 +153,8 @@ export function gen_haproxy_cfg(
 				}
 			}
 
-			// create backend block
-			const s_block = `backend ${si_type}`+unindent(aligned`
+			// add http backend block
+			a_backends.push(`backend ${si_type}_http`+unindent(aligned`
 				# regularly perform HTTP checks
 				option httpchk OPTIONS ${'lcd' === si_mode? '/cosmos/base/tendermint/v1beta1/blocks/latest': '/status'} HTTP/1.1
 				http-check expect status 200
@@ -168,10 +179,44 @@ export function gen_haproxy_cfg(
 
 				# servers
 				${a_servers}
-			`);
+			`));
 
-			// add backend
-			a_backends.push(s_block);
+			// RPC mode
+			if('rpc' === si_mode) {
+				// add websocket backend block
+				a_backends.push(`backend ${si_type}_websocket`+unindent(aligned`
+					# timeouts
+					timeout connect 5s
+					timeout server 1h
+					timeout client 1h
+		
+					# websocket upgrade
+					http-request set-header Connection upgrade if { req.hdr(Upgrade) -i websocket }
+					http-request set-header Upgrade websocket if { req.hdr(Upgrade) -i websocket }
+		
+					# regularly perform HTTP checks
+					option httpchk OPTIONS /status HTTP/1.1
+					http-check expect status 200
+		
+					# how to distribute the load
+					balance roundrobin
+		
+					# strip routing part of path
+					http-request replace-path ${sr_path}/(.*) /\\1
+		
+					# set the Host header to the name of the selected server (using its hostname)
+					http-send-name-header Host
+		
+					# in the response, set a header to indicate which server was routed to
+					http-response add-header Proxied-Server-Domain %[srv_name]
+		
+					# default server options
+					default-server ssl check-ssl verify required ca-file /etc/ssl/certs/ca-certificates.crt
+		
+					# servers
+					${a_servers}
+				`));
+			}
 		}
 	}
 

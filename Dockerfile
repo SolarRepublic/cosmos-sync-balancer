@@ -1,8 +1,9 @@
-FROM node:24-bookworm-slim
+FROM node:24-alpine
 LABEL org.opencontainers.image.source="https://github.com/SolarRepublic/cosmos-sync-balancer"
 WORKDIR /usr/src/app
 
-RUN apt-get update && apt-get install -y haproxy supervisor inotify-tools
+RUN apk add --no-cache haproxy supervisor inotify-tools \
+	&& rm -rf /var/cache/apk/* /tmp/*
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 COPY package.json pnpm-lock.yaml tsconfig.json ./

@@ -34,6 +34,9 @@ async function update_balancer() {
 		// update interval
 		xt_interval_health_check = gc_config.params.healthCheckIntervalMs;
 
+		// 
+		console.log(' ---- starting ----');
+
 		// perform health check
 		const sx_haproxy = await global_health_check(gc_config);
 
